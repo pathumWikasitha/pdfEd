@@ -1,22 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Generate PDF</title>
-  </head>
-  <body>
-    <h2>Enter Your Info</h2>
-    <form action="/generate" method="post">
-      <label>Name:</label><br />
-      <input type="text" name="name" /><br /><br />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .result {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Generate PDF</h2>
+        <form id="pdfForm">
+            <div class="form-group">
+                <label for="date">Date (YYYY-MM-DD)</label>
+                <input type="text" class="form-control" id="date" placeholder="Enter date" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="text" class="form-control" id="phone" placeholder="Enter phone number" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Generate PDF</button>
+        </form>
 
-      <label>Address:</label><br />
-      <input type="text" name="address" /><br /><br />
+        <div class="result" id="result">
+            <h5>PDF generated successfully!</h5>
+            <a href="#" id="pdfLink" target="_blank" class="btn btn-success">Download PDF</a>
+            <p><strong>Transaction ID:</strong> <span id="transactionId"></span></p>
+        </div>
+    </div>
 
-      <label>Phone:</label><br />
-      <input type="text" name="phone" /><br /><br />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $('#pdfForm').submit(function(event) {
+            event.preventDefault();
 
-      <input type="submit" value="Generate PDF" />
-    </form>
-  </body>
+            var date = $('#date').val();
+            var phone = $('#phone').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/generate-pdf',
+                data: {
+                    date: date,
+                    phone: phone
+                },
+                success: function(response) {
+                    $('#result').show();
+                    $('#pdfLink').attr('href', response.pdf_url);
+                    $('#transactionId').text(response.transaction_id);
+                },
+                error: function(error) {
+                    alert("An error occurred: " + error.responseJSON.error);
+                }
+            });
+        });
+    </script>
+</body>
 </html>

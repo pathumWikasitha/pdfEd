@@ -1,6 +1,8 @@
+version: 1
 services:
-  - type: web
-    name: receipt-generator
+  - name: pdf-generator
     env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python app.py"
+    buildCommand: |
+      sudo apt-get install -y wkhtmltopdf
+      pip install -r requirements.txt
+    startCommand: gunicorn app:app
